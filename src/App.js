@@ -1,23 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState} from 'react'
+import axios from 'axios'
+
 
 function App() {
+
+  const [backendData, setBackendData] = useState({})
+
+  //feth api version
+  //fetches /api route from backend and whatever response is recceived is put 
+  //into backendData, only runs on the first render
+  // useEffect(() => {
+  //   fetch('/api').then(
+  //     response => response.json()
+  //   ).then(
+  //     data => {
+  //       setBackendData(data)
+  //     }
+  //   ).catch(
+  //     err => {
+  //       console.log(err)
+  //     }
+  //  )
+  // }, [])
+
+  //axios version
+  useEffect(() => {
+    axios.get('/api')
+    .then(res => {
+    setBackendData(res.data)
+  }).catch(err => {
+    console.log(err)
+  })
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {(backendData.message == null) ? (
+        <h1>Loading...</h1>
+      ): (
+        <h1>{backendData.message}</h1>
+      )}
     </div>
   );
 }
