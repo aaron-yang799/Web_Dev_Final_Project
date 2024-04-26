@@ -7,6 +7,8 @@ function Validation(values) {
         error.email = "Email should not be empty."
     }else if(!email_pattern.test(values.email)){
         error.email = "Email is Incorrect."
+    }else if(values.email.length > 64){
+        error.email = "Email must be 64 characters or less"
     }else{
         error.email = ""
     }

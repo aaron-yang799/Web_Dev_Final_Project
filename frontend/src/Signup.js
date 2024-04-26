@@ -2,12 +2,16 @@ import React, {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Validation from './SignupValidation'
 import axios from 'axios'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Signup() {
     const [values, setValues] = useState({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        birthday: null
     })
 
     const navigate = useNavigate()
@@ -15,6 +19,10 @@ function Signup() {
     const handleInput = (e) =>{
         setValues(prev => ({...prev, [e.target.name]: [e.target.value]}))
     }
+
+    const handleDateChange = (date) => {
+        setValues(prev => ({ ...prev, birthday: date }));
+    };
 
     const handleSubmit= (e) => {
         e.preventDefault();
@@ -51,6 +59,16 @@ function Signup() {
                     <input type="password" placeholder='Enter Password' name='password'
                         onChange={handleInput} className='form-control rounded-0'/>
                     {errors.password && <span className='text-danger mt-1'> {errors.password}</span>}
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="birthday"><strong>Birthday</strong></label>
+                    <DatePicker
+                        selected={values.birthday}
+                        onChange={handleDateChange}
+                        dateFormat="yyyy-MM-dd"
+                        className="form-control rounded-0"
+                        name="birthday"
+                    />
                 </div>
                 <button type='submit' className='btn btn-danger w-100'><strong>Create Account</strong></button>
                 <p className='mb-1 mt-1'>You are agreeing to our terms and policies.</p>
