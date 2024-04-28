@@ -18,11 +18,17 @@ function Validation(values) {
     }
 
     if(values.password === ""){
-        error.password = "Password should not be empty"
+        error.password = "Password should not be empty."
     }else if(!password_pattern.test(values.password)){
         error.password = "Password should be eight chracters long, have one capital letter, one number, and one lowercase letter."
     }else{
         error.password = ""
+    }
+
+    if(!values.birthday){
+        error.birthday = "Birthday should not be empty."
+    }else{
+        error.birthday = ""
     }
 
     return error;

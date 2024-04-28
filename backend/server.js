@@ -16,14 +16,14 @@ app.use(cors())
 app.use(express.json())
 
 const databse = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '312665Zss###',
-    database: 'yap_db'
+    host: 'web-final-db.cnge86iqy455.us-east-2.rds.amazonaws.com',
+    user: 'admin',
+    password: 'webDevFinal',
+    database: 'web_dev_db'
 })
 
 app.post('/signup', (req, res) => {
-    const sql = 'INSERT INTO yap_user (`Email`, `Hashkey`, `Full_Name`, `Birthday`) VALUES (?)';
+    const sql = 'INSERT INTO User_Info (`Email`, `Hashkey`, `Full_Name`, `Birthday`) VALUES (?)';
     const values = [
         req.body.email.join(''),
         generateHash(req.body.email, req.body.password),
@@ -40,7 +40,7 @@ app.post('/signup', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-    const sql = 'SELECT * FROM yap_user WHERE `Email` = ? AND `Hashkey` = ?';
+    const sql = 'SELECT * FROM User_Info WHERE `Email` = ? AND `Hashkey` = ?';
     databse.query(sql, [req.body.email, generateHash(req.body.email, req.body.password)], (err, data) => {
         if(err) {
             return res.json("error")

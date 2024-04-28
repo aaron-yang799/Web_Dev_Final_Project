@@ -28,7 +28,7 @@ function Signup() {
         e.preventDefault();
         const err = (Validation(values))
         setErrors(err)
-        if(err.name === "" && err.email === "" && err.password === ""){
+        if(err.name === "" && err.email === "" && err.password === "" && err.birthday === ""){
             axios.post('http://localhost:8081/signup', values)
             .then(res => {
                 navigate('/');
@@ -66,9 +66,11 @@ function Signup() {
                         selected={values.birthday}
                         onChange={handleDateChange}
                         dateFormat="yyyy-MM-dd"
-                        className="form-control rounded-0"
+                        className="form-control rounded-0 ms-2"
                         name="birthday"
+                        placeholderText={'Enter Birthday'}
                     />
+                    {errors.birthday && <span className='text-danger mt-1 d-block'> {errors.birthday}</span>}
                 </div>
                 <button type='submit' className='btn btn-danger w-100'><strong>Create Account</strong></button>
                 <p className='mb-1 mt-1'>You are agreeing to our terms and policies.</p>
