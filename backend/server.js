@@ -39,6 +39,46 @@ app.post('/signup', (req, res) => {
     })
 })
 
+// Endpoint to send friend requests
+app.post('/sendFriendRequest', (req, res) => {
+    const sql = 'INSERT INTO Friend_Requests (`From_Email`, `To_Email`, `Status`) VALUES (?, ?, "pending")';
+    const values = [req.body.fromEmail, req.body.toEmail];
+
+    database.query(sql, values, (err, data) => {
+        if(err) {
+            return res.status(500).json({ message: "Error sending friend request", error: err });
+        }
+        return res.status(200).json({ message: "Friend request sent" });
+    });
+});
+
+// Endpoint to get pending friend requests
+app.get('/getFriendRequests', (req, res) => {
+    const sql = 'SELECT * FROM Friend_Requests WHERE `To_Email` = ? AND `Status` = "pending"';
+    const values = [req.query.toEmail];
+
+    database.query(sql, values, (err, data) => {
+        if (err) {
+            return res.status(500).json({ message: "Error retrieving friend requests", error: err });
+        }
+        return res.status(200).json(data);
+    });
+});
+
+// Endpoint to accept friend requests
+app.post('/acceptFriendRequest', (req, res) => {
+    const sql = 'UPDATE Friend_Requests SET `Status` = "accepted" WHERE `From_Email` = ? AND `To_Email` = ?';
+    const values = [req.body.fromEmail, req.body.toEmail];
+
+    database.query(sql, values, (err, data) => {
+        if (err) {
+            return res.status(500).json({ message: "Error accepting friend request", error: err });
+        }
+        return res.status(200).json({ message: "Friend request accepted" });
+    });
+});
+
+
 app.post('/login', (req, res) => {
     const sql = 'SELECT * FROM User_Info WHERE `Email` = ? AND `Hashkey` = ?';
     databse.query(sql, [req.body.email, generateHash(req.body.email, req.body.password)], (err, data) => {
