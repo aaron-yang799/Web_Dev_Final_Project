@@ -83,7 +83,7 @@ function Signup() {
                     </div>
                     <button type='submit' className='btn btn-danger w-100'><strong>Create Account</strong></button>
                     <p className='mb-1 mt-1'>You are agreeing to our terms and policies.</p>
-                    <a href="/signup" className="float-end mt-2">Log In</a>
+                    <a href="/" className="float-end mt-2">Log In</a>
                 </form>
             </div>
         </div>
