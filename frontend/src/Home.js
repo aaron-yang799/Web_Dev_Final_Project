@@ -3,9 +3,11 @@ import { Container, Row, Col, ListGroup, Form, Button, ListGroupItem } from 'rea
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 import "./Home.css";
+import { useUser } from './components/UserContext';
+
 
 function Home() {
-  
+  const { user } = useUser(); // Accessing the current user's data
   //example chats to show functionality
   const [chats, setChats] = useState(null);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -16,8 +18,8 @@ function Home() {
 
 
   useEffect(() => {
-    fetchChats(localStorage.getItem("userID"));
-  }, []);
+    fetchChats(user.userID);
+  }, [user.userID]);
 
   const fetchChats = async (userID) => {
     try {
@@ -74,7 +76,7 @@ function Home() {
       const response = await axios.post(`http://localhost:8081/messages/${selectedChat.chatID}`, { 
           message: message, 
           chat: selectedChat,
-          username: localStorage.getItem("username")
+          username: user.username
         });
       if(response.data) {
         const newMessages = [...messages, response.data];
