@@ -1,50 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useUser } from './UserContext';
 
 function FriendsList() {
+    const { user } = useUser(); // Accessing the current user's data
     const [friends, setFriends] = useState([]);
     const [username, setUsername] = useState('');
     const [pendingRequests, setPendingRequests] = useState([]);
 
     useEffect(() => {
-        const fetchPendingRequests = async () => {
-            try {
-                const response = await axios.get('http://localhost:8081/getFriendRequests', {
-                    params: { toUsername: 'Tom1' } // Replace with logged-in user username
-                });
-                setPendingRequests(response.data);
-            } catch (error) {
-                console.error('Failed to fetch friend requests:', error);
-            }
-        };
+        if (user) { // Ensure there is a user before fetching
+            const fetchPendingRequests = async () => {
+                try {
+                    const response = await axios.get('http://localhost:8081/getFriendRequests', {
+                        params: { toUsername: user.username } // Use the logged-in user's username
+                    });
+                    setPendingRequests(response.data);
+                } catch (error) {
+                    console.error('Failed to fetch friend requests:', error);
+                }
+            };
 
-        fetchPendingRequests();
-    }, []);
+            fetchPendingRequests();
+        }
+    }, [user]); // Depend on the user state
 
     const handleSendRequest = async (username) => {
-        try {
-            const response = await axios.post('http://localhost:8081/sendFriendRequest', {
-                fromUsername: 'Tom1', // This should be the username of the logged-in user
-                toUsername: username
-            });
-            alert(response.data.message);
-        } catch (error) {
-            console.error('Error sending friend request:', error);
-            alert('Failed to send friend request');
+        if (user) { // Ensure there is a user before sending a request
+            try {
+                const response = await axios.post('http://localhost:8081/sendFriendRequest', {
+                    fromUsername: user.username, // Use the logged-in user's username
+                    toUsername: username
+                });
+                alert(response.data.message);
+            } catch (error) {
+                console.error('Error sending friend request:', error);
+                alert('Failed to send friend request');
+            }
         }
     };
 
     const handleAcceptRequest = async (fromUsername) => {
-        try {
-            const response = await axios.post('http://localhost:8081/acceptFriendRequest', {
-                fromUsername: fromUsername,
-                toUsername: 'Tom1' // Replace with logged-in user username
-            });
-            setPendingRequests(pendingRequests.filter(req => req.From_Username !== fromUsername));
-            alert(response.data.message);
-        } catch (error) {
-            console.error('Error accepting friend request:', error);
-            alert('Failed to accept friend request');
+        if (user) { // Ensure there is a user before accepting a request
+            try {
+                const response = await axios.post('http://localhost:8081/acceptFriendRequest', {
+                    fromUsername: fromUsername,
+                    toUsername: user.username // Use the logged-in user's username
+                });
+                setPendingRequests(pendingRequests.filter(req => req.From_Username !== fromUsername));
+                alert(response.data.message);
+            } catch (error) {
+                console.error('Error accepting friend request:', error);
+                alert('Failed to accept friend request');
+            }
         }
     };
 
