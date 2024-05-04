@@ -7,19 +7,31 @@ function FriendsList() {
     const [pendingRequests, setPendingRequests] = useState([]);
 
     useEffect(() => {
-        const fetchPendingRequests = async () => {
-            try {
-                const response = await axios.get('http://localhost:8081/getFriendRequests', {
-                    params: { toEmail: 'yourEmail@example.com' } // Replace with logged-in user email
-                });
-                setPendingRequests(response.data);
-            } catch (error) {
-                console.error('Failed to fetch friend requests:', error);
-            }
-        };
-
-        fetchPendingRequests();
+    fetchPendingRequests();
+    fetchFriends();
     }, []);
+
+    const fetchPendingRequests = async () => {
+        try {
+            const response = await axios.get('http://localhost:8081/getFriendRequests', {
+                params: { toEmail: 'test@test.com' } // Replace with logged-in user email
+            });
+            setPendingRequests(response.data);
+        } catch (error) {
+            console.error('Failed to fetch friend requests:', error);
+        }
+    };
+
+    const fetchFriends = async () => {
+        try {
+            const response = await axios.get('http://localhost:8081/getFriends', {
+                params: { toEmail: 'test@test.com' } // Replace with logged-in user email
+            });
+            setFriends(response.data);
+        } catch (error) {
+            console.error('Failed to fetch friends list:', error);
+        } 
+    };
 
     const handleSendRequest = async (email) => {
         try {
@@ -38,9 +50,9 @@ function FriendsList() {
         try {
             const response = await axios.post('http://localhost:8081/acceptFriendRequest', {
                 fromEmail: fromEmail,
-                toEmail: 'yourEmail@example.com' // Replace with logged-in user email
+                toEmail: 'test@test.com' // Replace with logged-in user email
             });
-            setPendingRequests(pendingRequests.filter(req => req.From_Email !== fromEmail));
+            setPendingRequests(pendingRequests.filter(req => req.Requester_Email !== fromEmail));
             alert(response.data.message);
         } catch (error) {
             console.error('Error accepting friend request:', error);
@@ -63,8 +75,8 @@ function FriendsList() {
             <h2>Friends List</h2>
             <ul>
                 {friends.map(friend => (
-                    <li key={friend.id}>
-                        {friend.name} - {friend.status}
+                    <li key={friend.Email}>
+                        {friend.Full_Name}
                         <button onClick={() => console.log('Start Chat')}>Start Chat</button>
                     </li>
                 ))}
@@ -72,9 +84,9 @@ function FriendsList() {
             <h2>Pending Friend Requests</h2>
             <ul>
                 {pendingRequests.map(request => (
-                    <li key={request.From_Email}>
-                        {request.From_Email}
-                        <button onClick={() => handleAcceptRequest(request.From_Email)}>Accept</button>
+                    <li key={request.Requester_Email}>
+                        {request.Requester_Email}
+                        <button onClick={() => handleAcceptRequest(request.Requester_Email)}>Accept</button>
                     </li>
                 ))}
             </ul>

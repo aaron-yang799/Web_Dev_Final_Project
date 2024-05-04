@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, ListGroup, Form, Button } from 'react-bootstrap';
 import "./Home.css";
+import  FriendsList  from "./components/friendslist.js"
 
 function Home() {
   
@@ -32,8 +33,28 @@ function Home() {
     setMessage('');
   };
 
+//   const handleSubmit= (e) => {
+//     e.preventDefault();
+//     const err = (Validation(values))
+//     setErrors(err)
+//     if(err.email === "" && err.password === ""){
+//         axios.post('http://localhost:8081/login', values)
+//         .then(res => {
+//             if(res.data === "Success"){
+//                 navigate('/home')
+//             }else{
+//                 alert("No Record Exists")
+//             }
+//         })
+//         .catch(err => console.log(err))
+//     }
+// }
+
   return (
     <Container fluid className="container">
+      <Row>
+        <FriendsList/>
+      </Row>
       <Row>
         <Col md={4}>
           <ListGroup>
