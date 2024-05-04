@@ -16,8 +16,8 @@ function Home() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetchChats(localStorage.getItem("userID"));
-  }, []);
+    fetchChats(user.userID);
+  }, [user.userID]);
 
     const fetchChats = async (userID) => {
         try {
@@ -58,23 +58,24 @@ function Home() {
         setMessage(event.target.value);
     };
 
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`http://localhost:8081/messages/${selectedChat.chatID}`, { 
-                message: message, 
-                username: user.username
-            });
-            if(response.data) {
-                const newMessages = [...messages, response.data];
-                setMessages(newMessages);
-            }
-        }   
-        catch (error) {
-            console.error(error);
-        }
-        setMessage('');
-    };
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`http://localhost:8081/messages/${selectedChat.chatID}`, { 
+          message: message, 
+          chat: selectedChat,
+          username: user.username
+        });
+      if(response.data) {
+        const newMessages = [...messages, response.data];
+        setMessages(newMessages);
+      }
+    }   
+    catch (error) {
+      console.error(error);
+    }
+    setMessage('');
+  };
 
     const bottomRef = useRef(null);
 
