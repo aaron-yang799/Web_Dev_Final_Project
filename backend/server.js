@@ -15,7 +15,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const databse = mysql.createConnection({
+const database = mysql.createConnection({
     host: 'web-final-db.cnge86iqy455.us-east-2.rds.amazonaws.com',
     user: 'admin',
     password: 'webDevFinal',
@@ -54,7 +54,7 @@ app.post('/sendFriendRequest', (req, res) => {
 
 // Endpoint to get pending friend requests
 app.get('/getFriendRequests', (req, res) => {
-    const sql = 'SELECT * FROM Friend_Requests WHERE `To_Email` = ? AND `Status` = "pending"';
+    const sql = 'SELECT * FROM Friendship WHERE `Receiver_Email` = ? AND `Request_Status` = 0';
     const values = [req.query.toEmail];
 
     database.query(sql, values, (err, data) => {
@@ -65,9 +65,22 @@ app.get('/getFriendRequests', (req, res) => {
     });
 });
 
+// Endpoint to get friends list
+app.get('/getFriends', (req, res) => {
+    const sql = 'SELECT * FROM User_Info WHERE `Email` IN (SELECT `Requester_Email` FROM Friendship WHERE `Receiver_Email` = ? AND `Request_Status` = 1)';
+    const values = [req.query.toEmail];
+
+    database.query(sql, values, (err, data) => {
+        if (err) {
+            return res.status(500).json({ message: "Error retrieving friend list", error: err });
+        }
+        return res.status(200).json(data);
+    });
+});
+
 // Endpoint to accept friend requests
 app.post('/acceptFriendRequest', (req, res) => {
-    const sql = 'UPDATE Friend_Requests SET `Status` = "accepted" WHERE `From_Email` = ? AND `To_Email` = ?';
+    const sql = 'UPDATE Friendship SET `Request_Status` = 1 WHERE `Requester_Email` = ? AND `Receiver_Email` = ?';
     const values = [req.body.fromEmail, req.body.toEmail];
 
     database.query(sql, values, (err, data) => {
