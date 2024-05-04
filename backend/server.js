@@ -40,17 +40,59 @@ app.post('/signup', (req, res) => {
 })
 
 app.post('/sendFriendRequest', (req, res) => {
-    const sql = 'INSERT INTO Friend_Requests (`From_Username`, `To_Username`, `Status`) VALUES (?, ?, "pending")';
-    const values = [req.body.fromUsername, req.body.toUsername];
+    const { fromUsername, toUsername } = req.body;
+    if (fromUsername === toUsername) {
+        return res.status(400).json({ message: "Cannot send friend request to yourself." });
+    }
 
-    console.log("Attempting to send friend request with values:", values); // Log the data being sent
+    // SQL to check for existing friend requests
+    const checkSql = `
+        SELECT * FROM Friend_Requests 
+        WHERE (From_Username = ? AND To_Username = ?) OR (From_Username = ? AND To_Username = ?)
+    `;
 
-    databse.query(sql, values, (err, data) => {
-        if(err) {
-            console.error("SQL Error:", err); // Log SQL errors to the console
-            return res.status(500).json({ message: "Error sending friend request", error: err });
+    databse.query(checkSql, [fromUsername, toUsername, toUsername, fromUsername], (err, results) => {
+        if (err) {
+            console.error("SQL Error:", err);
+            return res.status(500).json({ message: "Error checking friend requests", error: err });
         }
-        return res.status(200).json({ message: "Friend request sent" });
+        if (results.length > 0) {
+            return res.status(409).json({ message: "Friend request already exists." }); // 409 Conflict
+        }
+
+        // If no existing request, proceed to insert the new friend request
+        const insertSql = 'INSERT INTO Friend_Requests (From_Username, To_Username, Status) VALUES (?, ?, "pending")';
+        databse.query(insertSql, [fromUsername, toUsername], (insertErr, insertData) => {
+            if (insertErr) {
+                console.error("SQL Error:", insertErr);
+                return res.status(500).json({ message: "Error sending friend request", error: insertErr });
+            }
+            return res.status(200).json({ message: "Friend request sent successfully" });
+        });
+    });
+});
+
+// Endpoint to remove friend
+app.post('/removeFriend', (req, res) => {
+    const { username, friendUsername } = req.body;
+    
+    // SQL to delete the friend relationship
+    const sql = `
+        DELETE FROM Friend_Requests
+        WHERE (From_Username = ? AND To_Username = ? AND Status = 'accepted')
+        OR (From_Username = ? AND To_Username = ? AND Status = 'accepted')
+    `;
+
+    databse.query(sql, [username, friendUsername, friendUsername, username], (err, result) => {
+        if (err) {
+            console.error("SQL Error:", err);
+            return res.status(500).json({ message: "Error removing friend", error: err });
+        }
+        if (result.affectedRows > 0) {
+            return res.status(200).json({ message: "Friend removed successfully" });
+        } else {
+            return res.status(404).json({ message: "Friend not found" });
+        }
     });
 });
 
@@ -83,6 +125,26 @@ app.post('/acceptFriendRequest', (req, res) => {
     });
 });
 
+// Endpoint to get a list of friends
+app.get('/getFriends', (req, res) => {
+    const username = req.query.username; // Get username from query parameters
+    const sql = `
+        SELECT CASE
+            WHEN From_Username = ? THEN To_Username
+            WHEN To_Username = ? THEN From_Username
+        END AS FriendUsername
+        FROM Friend_Requests
+        WHERE (From_Username = ? OR To_Username = ?) AND Status = 'accepted'
+    `;
+
+    databse.query(sql, [username, username, username, username], (err, results) => {
+        if (err) {
+            console.error("Error fetching friends:", err);
+            return res.status(500).json({ message: "Error fetching friends", error: err });
+        }
+        return res.status(200).json(results);
+    });
+});
 
 
 app.post('/login', (req, res) => {

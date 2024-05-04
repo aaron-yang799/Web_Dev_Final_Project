@@ -9,19 +9,23 @@ function FriendsList() {
     const [pendingRequests, setPendingRequests] = useState([]);
 
     useEffect(() => {
-        if (user) { // Ensure there is a user before fetching
+        if (user) {
             const fetchPendingRequests = async () => {
-                try {
-                    const response = await axios.get('http://localhost:8081/getFriendRequests', {
-                        params: { toUsername: user.username } // Use the logged-in user's username
-                    });
-                    setPendingRequests(response.data);
-                } catch (error) {
-                    console.error('Failed to fetch friend requests:', error);
-                }
+                const response = await axios.get('http://localhost:8081/getFriendRequests', {
+                    params: { toUsername: user.username }
+                });
+                setPendingRequests(response.data);
+            };
+
+            const fetchFriends = async () => {
+                const response = await axios.get('http://localhost:8081/getFriends', {
+                    params: { username: user.username }
+                });
+                setFriends(response.data); // Set the friends list
             };
 
             fetchPendingRequests();
+            fetchFriends();
         }
     }, [user]); // Depend on the user state
 
@@ -39,6 +43,25 @@ function FriendsList() {
             }
         }
     };
+
+    const handleRemoveFriend = async (friendUsername) => {
+        try {
+            const response = await axios.post('http://localhost:8081/removeFriend', {
+                username: user.username, // The logged-in user's username
+                friendUsername: friendUsername // The username of the friend to remove
+            });
+            if (response.status === 200) {
+                setFriends(currentFriends => currentFriends.filter(f => f.FriendUsername !== friendUsername));
+                alert('Friend removed successfully.');
+            } else {
+                alert('Failed to remove friend.');
+            }
+        } catch (error) {
+            console.error('Error removing friend:', error);
+            alert('Failed to remove friend.');
+        }
+    };
+    
 
     const handleAcceptRequest = async (fromUsername) => {
         if (user) { // Ensure there is a user before accepting a request
@@ -70,9 +93,10 @@ function FriendsList() {
             <h2>Friends List</h2>
             <ul>
                 {friends.map(friend => (
-                    <li key={friend.id}>
-                        {friend.username} - {friend.status}
+                    <li key={friend.FriendUsername}>
+                        {friend.FriendUsername}
                         <button onClick={() => console.log('Start Chat')}>Start Chat</button>
+                        <button onClick={() => handleRemoveFriend(friend.FriendUsername)} style={{ marginLeft: '10px' }}>Remove Friend</button>
                     </li>
                 ))}
             </ul>
