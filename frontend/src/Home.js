@@ -66,7 +66,7 @@ function Home() {
           </ListGroup>
         </Col>
         <Col md={8}>
-          <div className="chat-window" style={{ height: '70%', overflowY: 'scroll' }}>
+          <div className="chat-window" style={{ height: '70vh', overflowY: 'scroll' }}>
             {selectedChat.messages.map((msg, index) => (
               <div key={index}>{msg}</div>
             ))}

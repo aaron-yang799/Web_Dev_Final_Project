@@ -94,7 +94,7 @@ app.post('/acceptFriendRequest', (req, res) => {
 
 app.post('/login', (req, res) => {
     const sql = 'SELECT * FROM User_Info WHERE `Email` = ? AND `Hashkey` = ?';
-    databse.query(sql, [req.body.email, generateHash(req.body.email, req.body.password)], (err, data) => {
+    database.query(sql, [req.body.email, generateHash(req.body.email, req.body.password)], (err, data) => {
         if(err) {
             return res.json("error")
         }

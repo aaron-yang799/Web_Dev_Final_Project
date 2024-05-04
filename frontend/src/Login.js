@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Validation from './LoginValidation'
 import axios from 'axios'
+import { UserContext } from './context/UserContext';
 
 function Login() {
+    const user = useContext(UserContext);
     const backgroundStyle = {
         width: "100%",
         height: "100vh", // Or '100vh' for full viewport height
@@ -31,6 +33,7 @@ function Login() {
             .then(res => {
                 if(res.data === "Success"){
                     navigate('/home')
+                    user.setEmail(values.Email)
                 }else{
                     alert("No Record Exists")
                 }

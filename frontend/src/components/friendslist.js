@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios'; // Ensure you have axios installed using 'npm install axios'
+import { UserContext } from '../context/UserContext';
 
 function FriendsList() {
+    const user = useContext(UserContext);
     const [friends, setFriends] = useState([]);
     const [email, setEmail] = useState('');
     const [pendingRequests, setPendingRequests] = useState([]);
@@ -14,7 +16,8 @@ function FriendsList() {
     const fetchPendingRequests = async () => {
         try {
             const response = await axios.get('http://localhost:8081/getFriendRequests', {
-                params: { toEmail: 'test@test.com' } // Replace with logged-in user email
+                params: { toEmail: user.Email }
+                //params: { toEmail: 'test@test.com' } // Replace with logged-in user email
             });
             setPendingRequests(response.data);
         } catch (error) {
