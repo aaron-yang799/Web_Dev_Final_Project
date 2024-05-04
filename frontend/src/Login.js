@@ -29,7 +29,9 @@ function Login() {
         if(err.email === "" && err.password === ""){
             axios.post('http://localhost:8081/login', values)
             .then(res => {
-                if(res.data === "Success"){
+                if(res.data !== "Fail"){
+                    localStorage.setItem("userID",res.data.userID)
+                    localStorage.setItem("username",res.data.username)
                     navigate('/home')
                 }else{
                     alert("No Record Exists")

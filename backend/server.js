@@ -16,14 +16,14 @@ app.use(cors())
 app.use(express.json())
 
 const databse = mysql.createConnection({
-    host: 'web-final-db.cnge86iqy455.us-east-2.rds.amazonaws.com',
-    user: 'admin',
-    password: 'webDevFinal',
-    database: 'web_dev_db'
+    host: 'localhost',
+    user: 'root',
+    password: 'AaronYang789',
+    database: 'webdevdb'
 })
 
 app.post('/signup', (req, res) => {
-    const sql = 'INSERT INTO User_Info (`Email`, `Hashkey`, `Full_Name`, `Birthday`) VALUES (?)';
+    const sql = 'INSERT INTO users (`email`, `hashkey`, `username`, `birthday`) VALUES (?)';
     const values = [
         req.body.email.join(''),
         generateHash(req.body.email, req.body.password),
@@ -80,16 +80,70 @@ app.post('/acceptFriendRequest', (req, res) => {
 
 
 app.post('/login', (req, res) => {
-    const sql = 'SELECT * FROM User_Info WHERE `Email` = ? AND `Hashkey` = ?';
+    const sql = 'SELECT * FROM users WHERE `email` = ? AND `hashkey` = ?';
     databse.query(sql, [req.body.email, generateHash(req.body.email, req.body.password)], (err, data) => {
         if(err) {
             return res.json("error")
         }
         if(data.length > 0){
-            return res.json("Success")
+            return res.json(data[0])
         }else{
             return res.json("Fail")
         }
+    })
+})
+
+app.get('/messages/:userID', (req, res) => {
+    const sql = 'SELECT * FROM messages WHERE userID_from = ?';
+    databse.query(sql, [req.query.to], (err, data) => {
+        if(err) {
+            return res.json("error")
+        }
+        return res.json(data)
+    })
+})
+
+app.get('/chats', (req, res) => {
+    const sql = 'SELECT * FROM chat ';
+    databse.query(sql, (err, data) => {
+        if(err) {
+            return res.json("error")
+        }
+        return res.json(data)
+    })
+})
+
+app.get('/allmessages/:chatID', (req, res) => {
+    const sql = 'SELECT messageID, message, userID_from, userID_to FROM message WHERE chatID = ?';
+    databse.query(sql, [req.params.chatID], (err, data) => {
+        if(err) {
+            return res.json("error")
+        }
+        console.log(data);
+        return res.json(data)
+    })
+})
+
+app.post('/messages/:chatID', (req, res) => {
+    const sql = 'INSERT INTO message (`chatID`, `userID_from`, `userID_to`, `message`) VALUES (?, ?, ?, ?)';
+    const values = [req.params.chatID, req.body.chat.userID_from, req.body.chat.userID_to, req.body.message];
+    databse.query(sql, values, (err, insertData) => {
+        if(err) {
+            return res.json("error")
+        }
+
+        const selectSql = 'SELECT * FROM message WHERE messageID = ?';
+        databse.query(selectSql, [insertData.insertId], (selectErr, selectData) => {
+            if (selectErr) {
+                console.error(selectErr);  // Log the error for debugging purposes
+                return res.status(500).json({ message: "Error fetching the inserted message", error: selectErr });
+            }
+            if (selectData.length > 0) {
+                return res.status(201).json(selectData[0]);
+            } else {
+                return res.status(404).json({ message: "Inserted message not found" });
+            }
+        });
     })
 })
 

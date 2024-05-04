@@ -1,5 +1,6 @@
 .chat-window {
-    height: calc(100vh - 120px); /* Adjust based on your header/footer height */
+    height: 100%; /* Adjust based on your header/footer height */
+
     overflow-y: auto;
 }
   
