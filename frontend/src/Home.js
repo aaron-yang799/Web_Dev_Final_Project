@@ -93,7 +93,7 @@ function Home() {
         <Col md={4}>
           <ListGroup>
             {chats && chats.map(chat => (
-              <ListGroup.Item key={chat.chatID} onClick={() => handleSelectChat(chat)} action>
+              <ListGroup.Item className="chat-btn" key={chat.chatID} onClick={() => handleSelectChat(chat)} action>
                 {chat.chatName}
               </ListGroup.Item>
             ))}
@@ -115,7 +115,7 @@ function Home() {
               onChange={handleMessageChange}
               placeholder="Enter a message..."
             />
-            <Button variant="primary" onClick={handleSendMessage}>Send</Button>
+            <Button variant="primary" className='messageInput' onClick={handleSendMessage}>Send</Button>
           </Form>
         </Col>
       </Row>
