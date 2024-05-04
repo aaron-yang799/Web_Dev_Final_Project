@@ -32,6 +32,7 @@ function Login() {
                 if(res.data !== "Fail"){
                     localStorage.setItem("userID",res.data.userID)
                     localStorage.setItem("username",res.data.username)
+                    console.log(res.data.userID)
                     navigate('/home')
                 }else{
                     alert("No Record Exists")

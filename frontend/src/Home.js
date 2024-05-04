@@ -14,11 +14,11 @@ function Home() {
 
 
   useEffect(() => {
-    fetchChats();
+    fetchChats(localStorage.getItem("userID"));
   }, []);
 
   const fetchChats = async (userID) => {
-      const response = await fetch('http://localhost:8081/chats');
+      const response = await fetch(`http://localhost:8081/chats/${userID}`);
       const data = await response.json();
       setChats(data);
   }
