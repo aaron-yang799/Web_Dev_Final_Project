@@ -20,9 +20,13 @@ function Home() {
   }, []);
 
   const fetchChats = async (userID) => {
+    try {
       const response = await fetch(`http://localhost:8081/chats/${userID}`);
       const data = await response.json();
       setChats(data);
+      } catch (error) {
+      console.error(error);  
+    }
   }
 
   useEffect(() => {
@@ -39,11 +43,13 @@ function Home() {
       //   console.log(res.data); // Add this line
       //   setMessages(res.data);
       // });
-      console.log(chatID);
-      const response = await fetch(`http://localhost:8081/allmessages/${chatID}`);
-      const data = await response.json();
-      console.log(data);
-      setMessages(data);
+      try {
+        const response = await fetch(`http://localhost:8081/allmessages/${chatID}`);
+        const data = await response.json();
+        setMessages(data);
+      } catch (error) {
+        console.error(error);
+      }
     };
     if (selectedChat != null) {
       fetchMessages(selectedChat.chatID);
