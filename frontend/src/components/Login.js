@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Validation from './LoginValidation'
+import Validation from '../LoginValidation'
 import axios from 'axios'
 
-function Login() {
+const Login = ({socket}) => {
     const backgroundStyle = {
         width: "100%",
         height: "100vh", // Or '100vh' for full viewport height
@@ -15,6 +15,8 @@ function Login() {
         email: '',
         password: ''
     })
+
+    const [userName, setUserName] = useState('')
 
     const navigate = useNavigate()
     const[errors, setErrors] = useState({})
@@ -29,8 +31,14 @@ function Login() {
         if(err.email === "" && err.password === ""){
             axios.post('http://localhost:8081/login', values)
             .then(res => {
-                if(res.data === "Success"){
-                    navigate('/home')
+                if(res.data !== "Fail"){
+                    setUserName(values.email);
+                    localStorage.setItem('userEmail', res.data[0].email);
+                    localStorage.setItem('userID', res.data[0].id);
+                    console.log(localStorage.getItem('userID'));
+                    console.log(localStorage.getItem('userEmail'));
+                    socket.emit('newUser', { userName: values.email, socketID: socket.id });
+                    navigate('/chat')
                 }else{
                     alert("No Record Exists")
                 }
