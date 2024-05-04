@@ -119,7 +119,7 @@ app.get('/chats/:userID', (req, res) => {
 })
 
 app.get('/allmessages/:chatID', (req, res) => {
-    const sql = 'SELECT messageID, message FROM message WHERE chatID = ?';
+    const sql = 'SELECT messageID, message, username FROM message WHERE chatID = ?';
     databse.query(sql, [req.params.chatID], (err, data) => {
         if(err) {
             return res.json("error")
@@ -130,8 +130,8 @@ app.get('/allmessages/:chatID', (req, res) => {
 })
 
 app.post('/messages/:chatID', (req, res) => {
-    const sql = 'INSERT INTO message (`chatID`, `message`) VALUES (?, ?)';
-    const values = [req.params.chatID, req.body.message];
+    const sql = 'INSERT INTO message (`chatID`, `message`, `username`) VALUES (?, ?, ?)';
+    const values = [req.params.chatID, req.body.message, req.body.username];
     databse.query(sql, values, (err, insertData) => {
         if(err) {
             return res.json("error")

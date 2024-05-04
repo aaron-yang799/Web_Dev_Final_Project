@@ -1,5 +1,6 @@
-import React, { useState, useEffect} from 'react';
-import { Container, Row, Col, ListGroup, Form, Button } from 'react-bootstrap';
+import React, { useState, useEffect, useRef} from 'react';
+import { Container, Row, Col, ListGroup, Form, Button, ListGroupItem } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 import "./Home.css";
 
@@ -9,7 +10,8 @@ function Home() {
   const [chats, setChats] = useState(null);
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
-  
+
+
   const [message, setMessage] = useState('');
 
 
@@ -65,7 +67,8 @@ function Home() {
     try {
       const response = await axios.post(`http://localhost:8081/messages/${selectedChat.chatID}`, { 
           message: message, 
-          chat: selectedChat
+          chat: selectedChat,
+          username: localStorage.getItem("username")
         });
       if(response.data) {
         const newMessages = [...messages, response.data];
@@ -77,6 +80,12 @@ function Home() {
     }
     setMessage('');
   };
+
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <Container fluid className="container">
@@ -92,11 +101,14 @@ function Home() {
         </Col>
         <Col md={8}>
           <div className="chat-window">
-          {messages && messages.map(message => (
-              <div key={message.id} className="message">{message.message}</div>
-          ))}
+            <div className='chat-messages'>
+            {messages && messages.map(message => (
+                <div key={message.messageid} className="message">{message.username}: {message.message}</div>
+            ))}
+            <div ref={bottomRef} />
+            </div>
           </div>
-          <Form className="d-flex fixed-message-box">
+        <Form className="d-flex fixed-message-box">
             <Form.Control
               type="text"
               value={message}
