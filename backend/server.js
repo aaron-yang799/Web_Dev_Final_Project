@@ -16,9 +16,9 @@ app.use(cors())
 app.use(express.json())
 
 const databse = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'AaronYang789',
+    host: 'web-final-db.cnge86iqy455.us-east-2.rds.amazonaws.com',
+    user: 'admin',
+    password: 'webDevFinal',
     database: 'webdevdb'
 })
 
