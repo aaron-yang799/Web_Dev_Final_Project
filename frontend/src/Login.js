@@ -2,45 +2,51 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Validation from './LoginValidation'
 import axios from 'axios'
+import { useUser } from './components/UserContext'
 
 function Login() {
+    const { setUser } = useUser(); // Use the hook to get the setUser function
     const backgroundStyle = {
         width: "100%",
-        height: "100vh", // Or '100vh' for full viewport height
+        height: "100vh",
         backgroundColor: "#81C1FF",
-        backgroundSize: 'cover', // Cover the entire space of the element
+        backgroundSize: 'cover',
     };
 
     const [values, setValues] = useState({
         email: '',
         password: ''
-    })
+    });
 
-    const navigate = useNavigate()
-    const[errors, setErrors] = useState({})
-    const handleInput = (e) =>{
-        setValues(prev => ({...prev, [e.target.name]: [e.target.value]}))
-    }
+    const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
 
-    const handleSubmit= (e) => {
+    const handleInput = (e) => {
+        setValues(prev => ({...prev, [e.target.name]: [e.target.value]}));
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const err = (Validation(values))
-        setErrors(err)
-        if(err.email === "" && err.password === ""){
+        const err = Validation(values);
+        setErrors(err);
+        if (err.email === "" && err.password === "") {
             axios.post('http://localhost:8081/login', values)
             .then(res => {
-                if(res.data !== "Fail"){
-                    localStorage.setItem("userID",res.data.userID)
-                    localStorage.setItem("username",res.data.username)
-                    console.log(res.data.userID)
-                    navigate('/home')
-                }else{
-                    alert("No Record Exists")
+                if (res.data !== "Fail") {
+                    // Using user context to set user data
+                    setUser({
+                        userID: res.data.userID,
+                        username: res.data.username,
+                        email: values.email // Optionally storing email if needed elsewhere
+                    });
+                    navigate('/home');
+                } else {
+                    alert("No Record Exists");
                 }
             })
-            .catch(err => console.log(err))
+            .catch(err => console.log(err));
         }
-    }
+    };
 
   return (
     <div style={backgroundStyle}>

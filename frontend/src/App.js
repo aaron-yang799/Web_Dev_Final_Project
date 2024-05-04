@@ -4,9 +4,11 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom'
 import Signup from './Signup'
 import Home from "./Home"
 import FriendsList from "./components/friendslist"
+import { UserProvider } from "./components/UserContext"
 
 function App() {
   return (
+    <UserProvider>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Login />}> </Route>
@@ -15,6 +17,7 @@ function App() {
         <Route path='friends' element={<FriendsList />}> </Route>
       </Routes>
     </BrowserRouter>
+    </UserProvider>
   );
 }
 

@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Ensure you have axios installed using 'npm install axios'
+import axios from 'axios';
 
 function FriendsList() {
     const [friends, setFriends] = useState([]);
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [pendingRequests, setPendingRequests] = useState([]);
 
     useEffect(() => {
         const fetchPendingRequests = async () => {
             try {
                 const response = await axios.get('http://localhost:8081/getFriendRequests', {
-                    params: { toEmail: 'yourEmail@example.com' } // Replace with logged-in user email
+                    params: { toUsername: 'Tom1' } // Replace with logged-in user username
                 });
                 setPendingRequests(response.data);
             } catch (error) {
@@ -21,11 +21,11 @@ function FriendsList() {
         fetchPendingRequests();
     }, []);
 
-    const handleSendRequest = async (email) => {
+    const handleSendRequest = async (username) => {
         try {
             const response = await axios.post('http://localhost:8081/sendFriendRequest', {
-                fromEmail: 'yourEmail@example.com', // This should be the email of the logged-in user
-                toEmail: email
+                fromUsername: 'Tom1', // This should be the username of the logged-in user
+                toUsername: username
             });
             alert(response.data.message);
         } catch (error) {
@@ -34,13 +34,13 @@ function FriendsList() {
         }
     };
 
-    const handleAcceptRequest = async (fromEmail) => {
+    const handleAcceptRequest = async (fromUsername) => {
         try {
             const response = await axios.post('http://localhost:8081/acceptFriendRequest', {
-                fromEmail: fromEmail,
-                toEmail: 'yourEmail@example.com' // Replace with logged-in user email
+                fromUsername: fromUsername,
+                toUsername: 'Tom1' // Replace with logged-in user username
             });
-            setPendingRequests(pendingRequests.filter(req => req.From_Email !== fromEmail));
+            setPendingRequests(pendingRequests.filter(req => req.From_Username !== fromUsername));
             alert(response.data.message);
         } catch (error) {
             console.error('Error accepting friend request:', error);
@@ -49,13 +49,12 @@ function FriendsList() {
     };
 
     const handleInputChange = (event) => {
-        setEmail(event.target.value);
+        setUsername(event.target.value);
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        handleSendRequest(email);
-        setEmail('');
+    const handleSendClick = () => {
+        handleSendRequest(username);
+        setUsername(''); // Clear the input after sending the request
     };
 
     return (
@@ -64,7 +63,7 @@ function FriendsList() {
             <ul>
                 {friends.map(friend => (
                     <li key={friend.id}>
-                        {friend.name} - {friend.status}
+                        {friend.username} - {friend.status}
                         <button onClick={() => console.log('Start Chat')}>Start Chat</button>
                     </li>
                 ))}
@@ -72,22 +71,20 @@ function FriendsList() {
             <h2>Pending Friend Requests</h2>
             <ul>
                 {pendingRequests.map(request => (
-                    <li key={request.From_Email}>
-                        {request.From_Email}
-                        <button onClick={() => handleAcceptRequest(request.From_Email)}>Accept</button>
+                    <li key={request.From_Username}>
+                        {request.From_Username}
+                        <button onClick={() => handleAcceptRequest(request.From_Username)}>Accept</button>
                     </li>
                 ))}
             </ul>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="email"
-                    placeholder="Friend's email"
-                    value={email}
-                    onChange={handleInputChange}
-                    required
-                />
-                <button type="submit">Send Friend Request</button>
-            </form>
+            <input
+                type="text"
+                placeholder="Friend's username"
+                value={username}
+                onChange={handleInputChange}
+                required
+            />
+            <button onClick={handleSendClick}>Send Friend Request</button>
         </div>
     );
 }
