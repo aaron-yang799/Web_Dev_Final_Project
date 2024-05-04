@@ -1,6 +1,6 @@
 
 body {
-    background-color: #F8F9FA;
+    background-color: #a39090;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #212529;
     overflow: hidden;
@@ -14,8 +14,23 @@ body {
     left: 0;
     width: 100%;
     padding: 10px;
-    background: #fff;
+    background-color: #888686;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+.messageInput{
+    width: 15%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #888686;
+    background-color: #a57575;
+    margin-left: 10px;
+    height: 50px;
+}
+
+.messageInput:hover{
+    background-color: #7c7575;
+    border: none;
+
 }
 
 .container {
@@ -28,8 +43,8 @@ body {
 
 .chat-window {
     width: 40%;
-    height:80%;
-    background-color: #ffffff;
+    height:88%;
+    background-color: #888686;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -42,7 +57,20 @@ body {
 .chat-messages {
     word-wrap: break-word;
     overflow-wrap: break-word;
-    }
+}
+
+.chat-btn{
+    background-color: #a57575;
+    color: white;
+    padding: 10px;
+    border:  2px black;
+}
+
+.chat-btn:hover{
+    background-color: #888686;
+    padding: 10px;
+    border:  2px black;
+}
 
 .message{
     background-color: #f1f0f0;
