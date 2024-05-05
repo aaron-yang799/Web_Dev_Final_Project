@@ -219,16 +219,55 @@ app.post('/messages/:chatID', (req, res) => {
     })
 })
 
+// app.post('/startChat', (req, res) => {
+//     const { user1, user2} = req.body;
+//     const sql = `INSERT INTO chat (user1, user2) VALUES (?, ?)`;
+//     const values = [user1, user2];
+//     databse.query(sql, values, (err, result) => {
+//         if (err) {
+//             console.error("SQL Error", err);
+//             return res.status(500).json({ message: "Error checking chat", error: err });
+//         }
+//         return res.status(200).json({ chatID: result.insertId });
+//     });
+// });
+
 app.post('/startChat', (req, res) => {
-    const { user1, user2} = req.body;
-    const sql = `INSERT INTO chat (user1, user2) VALUES (?, ?)`;
-    const values = [user1, user2];
+    const{ user1, user2} = req.body;
+    
+    //INSERT into chat, get back the insert ID
+    
+    const sql = "INSERT INTO chat (chatName) VALUES (?);";
+    const values = [user1+" - "+user2];
+    let chatID = ''; 
     databse.query(sql, values, (err, result) => {
-        if (err) {
+        if(err) {
             console.error("SQL Error", err);
-            return res.status(500).json({ message: "Error checking chat", error: err });
+            return res.status(500).json({message: "Error starting chat", error: err});
         }
-        return res.status(200).json({ chatID: result.insertId });
+        chatID = result.insertID; 
+    });
+    const userSQL = "SELECT userID FROM users WHERE username IN (?, ?);";
+    const userValues = [user1, user2];
+    let userIDs = [];
+    databse.query(sql, values, (err, result) => {
+        if(err) {
+            console.error("SQL Error", err);
+            return res.status(500).json({message: "Error starting chat", error: err});
+        }
+        userIDs = result;
+    });
+    console.log(chatID, ' ', userIDs);
+    console.log(userValues);
+    const insertSQL = "INSERT INTO membership VALUES (?, ?), (?, ?);";
+    const insertValues = [chatID, userIDs[0], chatID, userIDs[1]];
+    databse.query(sql, values, (err, result) => {
+        if(err) {
+            console.error("SQL Error", err);
+            return res.status(500).json({message: "Error inserting members for  chat", error: err});
+        }
+        
+    return res.status(200).json({ chatID: chatID});
     });
 });
 
