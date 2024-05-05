@@ -113,6 +113,7 @@ function Home() {
                     onSendData={(data) => setNewChat(data)}/>
                 </Col>
                 <Col md={3}>
+                  <div className='window'>
                     <ListGroup>
                         {chats && chats.map(chat => (
                             <ListGroup.Item className="chat-btn" key={chat.chatID} onClick={() => handleSelectChat(chat)} action>
@@ -120,6 +121,7 @@ function Home() {
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
+                  </div>
                 </Col>
                 <Col md={6}>
                     <div className="chat-window">
