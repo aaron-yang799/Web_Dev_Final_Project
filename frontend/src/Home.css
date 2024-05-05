@@ -69,12 +69,9 @@ body {
 }
 
 .chat-btn:hover{
-    background-color: #888686;
-    padding: 10px;
-    border:  2px black;
-    border-radius: 5px; 
-    cursor: pointer;
-    margin-top: 10px;
+    background-color: #a57575;
+    color: black;
+    z-index: 0;
 }
 
 .message{
@@ -105,7 +102,6 @@ body {
     padding: 5px 10px;
     border: none;
     border-radius: 3px;
-    margin-left: 5px;
     cursor: pointer;
 }
 

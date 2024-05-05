@@ -105,9 +105,10 @@ function Home() {
     }, [messages]);
 
     return (
+      
         <Container fluid className="container">
             <Row>
-                <Col md={3}>
+                <Col md={0}>
                     <FriendsList
                     onSendData={(data) => setNewChat(data)}/>
                 </Col>
