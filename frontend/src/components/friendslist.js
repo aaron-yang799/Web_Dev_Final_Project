@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useUser } from './UserContext';
 
 function FriendsList(
-    {selectedChat,
-    setSelectedChat}
+    {onSendData}
 ) {
     const { user } = useUser(); // Accessing the current user's data
     const [friends, setFriends] = useState([]);
@@ -93,19 +92,13 @@ function FriendsList(
 
     const handleStartChat = async (friendUsername) => {
         try {
-            const response = await axios.post('http://localhost:8081/startChat', {
-                user1: user.username,
-                user2: friendUsername
-            });
-            const chatID = response.data.chatID;
-            setSelectedChat({
-                ...selectedChat,
-                chatID: chatID
-            })
-            console.log('Starting chat');
+            const response = await fetch(`http://localhost:8081/friendID/${friendUsername}`);
+            const data = await response.json();
+            const friendID = data.userID;
+            localStorage.setItem('friendName', friendUsername);
+            onSendData(friendID);
         } catch (error) {
             console.error('Error starting chat:', error);
-            alert('Failed to start chat');
         }
     };
 

@@ -14,6 +14,27 @@ function Home() {
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [newChat, setNewChat] = useState(null);
+
+  useEffect(() => {
+    const makeNewChat = async (userID, friendID) => {
+      try {
+        const fname = localStorage.getItem('friendName');
+        const response = await axios.post(`http://localhost:8081/newChat`, { 
+            userID: userID, 
+            friendID: friendID,
+            friendName: fname
+          });
+      } catch (error) {
+        console.error(error);
+      }
+      fetchChats(user.userID);
+    }
+    if (newChat != null) {
+        makeNewChat(user.userID, newChat);
+    }
+    
+  },[newChat]);
 
   useEffect(() => {
     fetchChats(user.userID);
@@ -88,8 +109,7 @@ function Home() {
             <Row>
                 <Col md={3}>
                     <FriendsList
-                    selectedChat={selectedChat} 
-                    setSelectedChat={setSelectedChat}/>
+                    onSendData={(data) => setNewChat(data)}/>
                 </Col>
                 <Col md={3}>
                     <ListGroup>

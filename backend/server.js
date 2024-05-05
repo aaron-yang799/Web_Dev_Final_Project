@@ -232,6 +232,53 @@ app.post('/startChat', (req, res) => {
     });
 });
 
+app.post('/newChat', (req, res) => {
+    const sql = `INSERT INTO chat (chatName) VALUES (?)`;
+    databse.query(sql, [req.body.friendName], (err, insertData) => {
+        if (err) {
+            console.error("SQL Error", err);
+            return res.status(500).json({ message: "Error checking chat", error: err });
+        }
+
+        const sql4= `SELECT chatID FROM chat WHERE chatName = ?`;
+        databse.query(sql4, [req.body.friendName], (err, dataa) => {
+            if (err) {
+                console.error("SQL Error", err);
+                return res.status(500).json({ message: "Error checking chat", error: err });
+            }
+            const chatID = dataa[0].chatID;
+
+        const sql2 = `INSERT INTO membership (chat_id, user_id) VALUES (?, ?)`;
+        databse.query(sql2, [chatID, req.body.userID], (err, data) => {
+            if (err) {
+                console.error("SQL Error", err);
+                return res.status(500).json({ message: "Error checking chat", error: err });
+            }
+            const sql3 = `INSERT INTO membership (chat_id, user_id) VALUES (?, ?)`;
+            databse.query(sql3, [chatID, req.body.friendID], (err, result) => {
+                if (err) {
+                    console.error("SQL Error", err);
+                    return res.status(500).json({ message: "Error checking chat", error: err });
+                }        
+                return res.status(200).json({ chatID: insertData.insertID });
+            });
+            
+        });
+
+    });
+    });
+});
+
+app.get('/friendID/:friendUsername', (req, res) => {
+    const sql = 'SELECT userID FROM users WHERE username=?';
+    databse.query(sql, [req.params.friendUsername], (err, data) => {
+        if(err) {
+            return res.json("error")
+        }
+        return res.json(data[0]);
+    })
+})
+
 app.listen(8081, () => {
     console.log('Listening...')
 })
