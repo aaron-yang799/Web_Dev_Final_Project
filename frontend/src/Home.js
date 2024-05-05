@@ -36,7 +36,7 @@ function Home() {
     }, [chats]);
 
     useEffect(() => {
-        const fetchMessages = async (chatID) => {
+                const fetchMessages = async (chatID) => {
             try {
                 const response = await fetch(`http://localhost:8081/allmessages/${chatID}`);
                 const data = await response.json();
@@ -87,7 +87,9 @@ function Home() {
         <Container fluid className="container">
             <Row>
                 <Col md={3}>
-                    <FriendsList />
+                    <FriendsList
+                    selectedChat={selectedChat} 
+                    setSelectedChat={setSelectedChat}/>
                 </Col>
                 <Col md={3}>
                     <ListGroup>
@@ -102,7 +104,7 @@ function Home() {
                     <div className="chat-window">
                         <div className='chat-messages'>
                             {messages && messages.map(message => (
-                                <div key={message.messageid} className="message">{message.username}: {message.message}</div>
+                                <div key={message.messageID} className="message">{message.username}: {message.message}</div>
                             ))}
                             <div ref={bottomRef} />
                         </div>

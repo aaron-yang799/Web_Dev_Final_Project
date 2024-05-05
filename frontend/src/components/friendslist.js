@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from './UserContext';
 
-function FriendsList() {
+function FriendsList(
+    {selectedChat,
+    setSelectedChat}
+) {
     const { user } = useUser(); // Accessing the current user's data
     const [friends, setFriends] = useState([]);
     const [username, setUsername] = useState('');
@@ -88,19 +91,39 @@ function FriendsList() {
         setUsername(''); // Clear the input after sending the request
     };
 
+    const handleStartChat = async (friendUsername) => {
+        try {
+            const response = await axios.post('http://localhost:8081/startChat', {
+                user1: user.username,
+                user2: friendUsername
+            });
+            const chatID = response.data.chatID;
+            setSelectedChat({
+                ...selectedChat,
+                chatID: chatID
+            })
+            console.log('Starting chat');
+        } catch (error) {
+            console.error('Error starting chat:', error);
+            alert('Failed to start chat');
+        }
+    };
+
     return (
         <div>
-            <h2>Friends List</h2>
-            <ul>
+            <h2 style={{ marginBottom: '10px' }}>Friends List</h2>
+            <ul className="friends-list">
                 {friends.map(friend => (
-                    <li key={friend.FriendUsername}>
-                        {friend.FriendUsername}
-                        <button onClick={() => console.log('Start Chat')}>Start Chat</button>
+                    <li key={friend.FriendUsername} className="friend-item">
+                        <span className="friend-name">{friend.FriendUsername}</span>
+                        <div className="friend-buttons">
+                        <button onClick={() => handleStartChat(friend.FriendUsername)}>Start Chat</button>
                         <button onClick={() => handleRemoveFriend(friend.FriendUsername)} style={{ marginLeft: '10px' }}>Remove Friend</button>
+                        </div>
                     </li>
                 ))}
             </ul>
-            <h2>Pending Friend Requests</h2>
+            <h2 style={{ marginTop: '20px', marginBottom: '10px' }}>Pending Friend Requests</h2>
             <ul>
                 {pendingRequests.map(request => (
                     <li key={request.From_Username}>
@@ -109,6 +132,7 @@ function FriendsList() {
                     </li>
                 ))}
             </ul>
+            <div style={{ marginTop: '20px' }}>
             <input
                 type="text"
                 placeholder="Friend's username"
@@ -116,7 +140,8 @@ function FriendsList() {
                 onChange={handleInputChange}
                 required
             />
-            <button onClick={handleSendClick}>Send Friend Request</button>
+            <button onClick={handleSendClick} className='chat-btn'>Send Friend Request</button>
+            </div>
         </div>
     );
 }

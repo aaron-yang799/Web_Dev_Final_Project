@@ -192,7 +192,6 @@ app.get('/allmessages/:chatID', (req, res) => {
         if(err) {
             return res.json("error")
         }
-        console.log(data);
         return res.json(data)
     })
 })
@@ -219,6 +218,19 @@ app.post('/messages/:chatID', (req, res) => {
         });
     })
 })
+
+app.post('/startChat', (req, res) => {
+    const { user1, user2} = req.body;
+    const sql = `INSERT INTO chat (user1, user2) VALUES (?, ?)`;
+    const values = [user1, user2];
+    databse.query(sql, values, (err, result) => {
+        if (err) {
+            console.error("SQL Error", err);
+            return res.status(500).json({ message: "Error checking chat", error: err });
+        }
+        return res.status(200).json({ chatID: result.insertId });
+    });
+});
 
 app.listen(8081, () => {
     console.log('Listening...')
